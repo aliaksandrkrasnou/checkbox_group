@@ -3,22 +3,10 @@ angular.module('app', [])
     .controller('MainController', function () {
 
         this.options = {
-            key1: {
-                state: false,
-                label: 'value 1'
-            },
-            key2: {
-                state: false,
-                label: 'value 2'
-            },
-            key3: {
-                state: false,
-                label: 'value 3'
-            },
-            key4: {
-                state: true,
-                label: 'value 4'
-            }
+            key1: 'value 1',
+            key2: 'value 2',
+            key3: 'value 3',
+            key4: 'value 4'
         };
 
         this.model = [];
@@ -33,52 +21,37 @@ angular.module('app', [])
             ngModel: 'ngModel'
         },
         controller: function () {
-            this.selectedOptions = [];
+            this.expandedOptions = [];
 
             this.$onInit = () => {
                 this.ngModel.$render = () => {
-                    this.selectedOptions = angular.copy(this.ngModel.$modelValue);
-                    this.initSelectedOptions(this.options);
+                    this.expandedOptions = Object.keys(this.options)
+                        .map(value => {
+                            return {
+                                state: (this.ngModel.$modelValue.indexOf(value) !== -1),
+                                value: value
+                            };
+                        });
+
                 };
 
             };
 
-            this.initSelectedOptions = (options) => {
-                Object.keys(options)
-                    .filter(key => !!options[key].state)
-                    .forEach(key => this.selectedOptions.push(this.options[key]));
-                this.updateSelectedOptions();
+            this.onUpdate = () => {
+                this.ngModel.$setViewValue(this.expandedOptions
+                    .filter(option => option.state)
+                    .map(option => option.value)
+                );
 
             };
 
-            this.onOptionUpdate = (optionKey) => {
-                this.updateOption(this.options[optionKey]);
-                this.updateSelectedOptions();
-
-            };
-
-            this.updateOption = (option) => {
-                const idx = this.selectedOptions.indexOf(option);
-
-                if (idx >= 0) {
-                    this.selectedOptions.splice(idx, 1);
-                } else {
-                    this.selectedOptions.push(option);
-                }
-
-            };
-
-            this.updateSelectedOptions = () => {
-                this.ngModel.$setViewValue(this.selectedOptions.map(option => option.label));
-
-            }
         },
         template: '<div class="col s12 m4 offset-m4">' +
         '<ul class="collection">' +
-        '<li class="collection-item" ng-repeat="(key, value) in $ctrl.options">' +
+        '<li class="collection-item" ng-repeat="option in $ctrl.expandedOptions">' +
         '<label>' +
-        '<input type="checkbox" ng-model="$ctrl.options[key].state" ng-change="$ctrl.onOptionUpdate(key);"/>' +
-        '<span>{{::value.label}}</span>' +
+        '<input type="checkbox" ng-model="option.state" ng-change="$ctrl.onUpdate();"/>' +
+        '<span>{{::option.value}}</span>' +
         '</label>' +
         '</li>' +
         '</ul>' +
@@ -90,5 +63,21 @@ angular.module('app', [])
         require: 'ngModel',
         link: ($scope, $elem, $attrs, ngModel) => {
             ngModel.$validators.customMinLength = (viewVal) => viewVal && viewVal.length >= $scope.$eval($attrs['customMinLength']);
+
+        }
+    }))
+
+    .directive('handleCheckboxInput', () => ({
+        restrict: 'A',
+        require: 'ngModel',
+        link: ($scope, $elem, $attrs, ngModel) => {
+            ngModel.$formatters.push(string => {
+                return angular.toJson(string);
+            });
+
+            ngModel.$parsers.push(string => {
+                return angular.fromJson(string);
+            });
+
         }
     }));

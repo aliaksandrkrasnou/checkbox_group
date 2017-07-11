@@ -25,3 +25,11 @@ label [type="checkbox"] {
 .ng-invalid {
     border: 2px solid red;
 }
+
+.input-field label {
+    color: white !important;
+}
+
+input {
+    border-bottom: 1px solid white !important;
+}

@@ -25,11 +25,19 @@
                         <div class="col s12">
                             <h5>Checkbox Group:</h5>
 
-                            <checkbox-group custom-min-length="1" ng-model="main.model" options="main.options" />
+                            <checkbox-group custom-min-length="1" ng-model="main.model" options="main.options"/>
 
                         </div>
                         <div class="col s12">
                             <p>Selected values: {{main.model | json}}</p>
+                        </div>
+                        <div class="col s12 input-field">
+                            <input id="selected_values"
+                                   type="text"
+                                   ng-model="main.model"
+                                   handle-checkbox-input
+                                   ng-model-options="{ updateOn: 'blur' }">
+                            <!--<label for="selected_values">Selected values</label>-->
                         </div>
                     </div>
 
