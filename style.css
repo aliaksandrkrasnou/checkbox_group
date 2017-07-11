@@ -1,0 +1,27 @@
+label {
+    position: relative;
+    cursor: pointer;
+}
+
+label [type="checkbox"] {
+    display: none;
+}
+
+[type="checkbox"] + span {
+    display: inline-block;
+    padding: 1em;
+}
+
+:checked + span {
+    display: inline-block;
+    background: #8bc34a;
+    color: white;
+}
+
+[type="checkbox"][disabled] + span {
+    background: grey;
+}
+
+.ng-invalid {
+    border: 2px solid red;
+}
